@@ -9,7 +9,6 @@ services:
     ports:
       - 5432:5432
     environment:
-       POSTGRES_PASSWORD: ecjujhcr
        POSTGRES_USER: dmanev
        POSTGRES_PASSWORD: Kjctr
        POSTGRES_DB: greetings
