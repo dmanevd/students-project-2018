@@ -1,53 +1,62 @@
 ---
 - hosts: mygroup
+  vars_files:
+    - "{{ playbook_dir }}/psql-vault.yml"
   vars:
     http_port: 80
     app_port: 5000
     psql_port: 5432
-    psql_user: dmanev
-    psql_passwrd: ecjujhcr    
+    psql_user: "{{ login }}"
+    psql_passwrd: "{{ password }}"    
     psql_db_name: greetings
   remote_user: root
+  become: yes
   tasks:
-    - name: Create docker-compose file
-      copy:
-        dest: ../docker-compose.yml
-        mode: 0755
-        content: |
+    - name: Stop and remove old docker-conteiners
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "postgresql"
+        - "greetings_app"
+        - "nginx-proxy"
+    - name: Create docker-compose file and statr app
+      docker_service:
+        project_name: "greetings_application"
+        recreate: always
+        definition:
           version: "3"
-            services:
-              postgresql:
-                image: postgres
-                container_name: postgresql
-                restart: always
-                ports:
-                  - "{{ psql_port }}:{{ psql_port }}"
-                environment:
-                POSTGRES_USER: {{ psql_user }}
-                POSTGRES_PASSWORD: {{ psql_passwrd }}
-                POSTGRES_DB: {{ psql_db_name }}
-              greetings_app:
-                build: .
-                restart: always
-                container_name: greetings_app
-                depends_on:
-                  - postgresql
-                environment:
-                  DB_URL: postgresql://{{ psql_user }}:{{ psql_passwrd }}:{{ psql_port }}/{{ psql_db_name }}
-                ports:
-                  - "{{ app_port }}:{{ app_port }}"
-                volumes:
-                  - ./greetings_app:/greetings_app
-              nginx-proxy:
-                image: nginx:latest
-                restart: always
-                container_name: nginx-proxy
-                links:
-                  - greetings_app
-                ports:
-                  - "{{ http_port }}:{{ http_port }}"
-                volumes:
-                  - ./ng_conf/nginx.conf:/etc/nginx/nginx.conf:ro
-                command: /bin/sh -c "nginx -g 'daemon off;'"
-      become: yes
-
+          services:
+            postgresql:
+              image: postgres
+              container_name: postgresql
+              restart: always
+              ports:
+                - "{{ psql_port }}:{{ psql_port }}"
+              environment:
+                POSTGRES_USER: "{{ psql_user }}"
+                POSTGRES_PASSWORD: "{{ psql_passwrd }}"
+                POSTGRES_DB: "{{ psql_db_name }}"
+            greetings_app:
+              build: "{{ playbook_dir }}/.."
+              restart: always
+              container_name: greetings_app
+              depends_on:
+                - postgresql
+              environment:
+                DB_URL: postgresql://{{ psql_user }}:{{ psql_passwrd }}@postgresql:{{ psql_port }}/{{ psql_db_name }}
+              ports:
+                - "{{ app_port }}:{{ app_port }}"
+              volumes:
+                - "{{ playbook_dir }}/../greetings_app:/greetings_app"
+            nginx-proxy:
+              image: nginx:latest
+              restart: always
+              container_name: nginx-proxy
+              links:
+                - greetings_app
+              ports:
+                - "{{ http_port }}:{{ http_port }}"
+              volumes:
+                - "{{ playbook_dir }}/../ng_conf/nginx.conf:/etc/nginx/nginx.conf:ro"
+              command: /bin/sh -c "nginx -g 'daemon off;'"
