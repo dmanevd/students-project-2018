@@ -14,7 +14,7 @@ services:
        POSTGRES_DB: greetings
 
   greetings_app:
-    image: python:3.7-rc
+    build: .
     restart: always
     container_name: greetings_app
     depends_on:
@@ -25,8 +25,8 @@ services:
       - 5000:5000
     volumes:
       - ./greetings_app:/greetings_app
-    command: bash -c "pip install -r /greetings_app/requirements.txt && python /greetings_app/app.py"
-    
+#    command: bash -c "echo 'done' &&  python /greetings_app/app.py"
+
   nginx-proxy:
     image: nginx:latest
     restart: always
@@ -34,7 +34,7 @@ services:
     links:
       - greetings_app
     ports:
-      - 80:8080
+      - 80:80
     volumes: 
       - ./ng_conf/nginx.conf:/etc/nginx/nginx.conf:ro
     command: /bin/sh -c "nginx -g 'daemon off;'"
