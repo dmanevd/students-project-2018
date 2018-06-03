@@ -1,0 +1,53 @@
+---
+- hosts: mygroup
+  vars:
+    http_port: 80
+    app_port: 5000
+    psql_port: 5432
+    psql_user: dmanev
+    psql_passwrd: ecjujhcr    
+    psql_db_name: greetings
+  remote_user: root
+  tasks:
+    - name: Create docker-compose file
+      copy:
+        dest: ../docker-compose.yml
+        mode: 0755
+        content: |
+          version: "3"
+            services:
+              postgresql:
+                image: postgres
+                container_name: postgresql
+                restart: always
+                ports:
+                  - "{{ psql_port }}:{{ psql_port }}"
+                environment:
+                POSTGRES_USER: {{ psql_user }}
+                POSTGRES_PASSWORD: {{ psql_passwrd }}
+                POSTGRES_DB: {{ psql_db_name }}
+              greetings_app:
+                build: .
+                restart: always
+                container_name: greetings_app
+                depends_on:
+                  - postgresql
+                environment:
+                  DB_URL: postgresql://{{ psql_user }}:{{ psql_passwrd }}:{{ psql_port }}/{{ psql_db_name }}
+                ports:
+                  - "{{ app_port }}:{{ app_port }}"
+                volumes:
+                  - ./greetings_app:/greetings_app
+              nginx-proxy:
+                image: nginx:latest
+                restart: always
+                container_name: nginx-proxy
+                links:
+                  - greetings_app
+                ports:
+                  - "{{ http_port }}:{{ http_port }}"
+                volumes:
+                  - ./ng_conf/nginx.conf:/etc/nginx/nginx.conf:ro
+                command: /bin/sh -c "nginx -g 'daemon off;'"
+      become: yes
+
