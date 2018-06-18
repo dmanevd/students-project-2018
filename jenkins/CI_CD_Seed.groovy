@@ -34,7 +34,7 @@ pipelineJob("CD-job") {
         }
     }
     triggers {
-        upstream('CI_job')
+        upstream('CI-job')
     }
 
     parameters {
