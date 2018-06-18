@@ -14,7 +14,7 @@ pipelineJob("CI-job") {
         }
     }
     triggers {
-        periodic(5)
+        scm('*/5 * * * *')
     }
 }
 
