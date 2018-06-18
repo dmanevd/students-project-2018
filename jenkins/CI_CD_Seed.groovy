@@ -42,7 +42,6 @@ pipelineJob("CD-job") {
 	    type('TAG')
 	    defaultValue('latest')
             sortMode('DESCENDING_SMART')
-            selectedValur('DEFAULT')
             description('image version')
         }
     }
