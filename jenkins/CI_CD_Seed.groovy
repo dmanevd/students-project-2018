@@ -14,7 +14,7 @@ pipelineJob("CI-job") {
         }
     }
     triggers {
-        scm('*/5 * * * *')
+        scm('H/5 * * * *')
     }
 }
 
@@ -41,7 +41,7 @@ pipelineJob("CD-job") {
 	gitParam('PARAM_GIT') {
 	    type('TAG')
 	    defaultValue('latest')
-        sortMode('DESCENDING_SMART') 
+            sortMode('DESCENDING_SMART') 
         }
     }
 
