@@ -8,8 +8,10 @@ def PROXY_CONTAINER_NAME = "nginx-proxy"
 
 node {
     stage('Initialize') {
-        def dockerHome = tool 'myDocker'
-        env.PATH = "${dockerHome}/bin:${env.PATH}"
+	if (sh(returnStatus: true, script: "which docker")) {
+                def dockerHome = tool 'myDocker'
+                env.PATH = "${dockerHome}/bin:${env.PATH}"
+        }
     }
 
     stage('Image Prune') {
