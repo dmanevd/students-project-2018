@@ -3,10 +3,8 @@ def DOCKER_HUB_USER = "dmanevd"
 
 node {
     stage('Initialize') {
-        if (sh(returnStatus: true, script: "which docker")) {
-        	def dockerHome = tool 'myDocker'
-        	env.PATH = "${dockerHome}/bin:${env.PATH}"
-	}
+       	def dockerHome = tool 'myDocker'
+       	env.PATH = "${dockerHome}/bin:${env.PATH}"
     }
 
     stage('Checkout') {
