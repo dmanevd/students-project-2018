@@ -39,9 +39,8 @@ node {
             sh "exit ${curl_status_app}"
         }
         sleep 5
-        html_out = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$APP_IP_ADDR:$APP_PORT").trim()
-        grep_status_app = sh(returnStatus: true, script: "echo $html_out | grep 'Greetings, stranger!' 1>/dev/null && echo \$?").trim()
-        if (grep_status_app != '0') {
+        grep_status_app = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$APP_IP_ADDR:$APP_PORT | grep 'Greetings, stranger!'").trim()
+        if (grep_status_app != '<title>Greetings, stranger!</title>') {
             currentBuild.result = 'FAILED'
             sh "exit ${grep_status_app}"
         }
@@ -54,9 +53,8 @@ node {
             sh "exit ${curl_status_pr}"
         }
         sleep 5
-        html_out_pr = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$PROXY_IP_ADDR:$APP_HTTP_PORT").trim()
-        grep_status_pr = sh(returnStatus: true, script: "echo $html_out_pr | grep 'Greetings, stranger!' 1>/dev/null && echo \$?").trim()
-        if (grep_status_pr != '0') {
+        grep_status_pr = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$PROXY_IP_ADDR:$APP_HTTP_PORT | grep 'Greetings, stranger!'").trim()
+        if (grep_status_pr != '<title>Greetings, stranger!</title>') {
             currentBuild.result = 'FAILED'
             sh "exit ${grep_status_pr}"
         }
