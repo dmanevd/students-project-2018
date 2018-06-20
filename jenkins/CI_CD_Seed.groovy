@@ -19,6 +19,16 @@ pipelineJob("CI-job") {
 }
 
 pipelineJob("CD-job") {
+    parameters {
+      gitParameterDefinition {
+      name('git_tags')
+      type('PT_TAG')
+      defaultValue('latest')
+      description('Select the version')
+      sortMode('DESCENDING_SMART')
+      selectedValue('TOP')
+    }
+  }
     definition {
         cpsScm {
             scm {
@@ -36,14 +46,4 @@ pipelineJob("CD-job") {
     triggers {
         upstream('CI-job')
     }
-
-    parameters {
-	gitParameterDefinition {
-		name('git_tags')
-	    	selectedValue('TOP')
-	    	sortMode('DESCENDING_SMART')
-	    	type('PT_TAG')
-        }
-    }
-
 }
