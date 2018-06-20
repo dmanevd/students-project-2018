@@ -38,11 +38,11 @@ pipelineJob("CD-job") {
     }
 
     parameters {
-	gitParam('git_tags') {
-	    description('image version')
-            type('TAG')
-	    selectedValue('DEFAULT')
-            sortMode('DESCENDING_SMART')
+	gitParameterDefinition {
+		name('git_tags')
+	    	selectedValue('TOP')
+	    	sortMode('DESCENDING_SMART')
+	    	type('PT_TAG')
         }
     }
 
