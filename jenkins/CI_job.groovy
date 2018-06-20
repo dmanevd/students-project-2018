@@ -29,11 +29,15 @@ node {
     }
 
     stage('Push to DockerHub') {
-        withCredentials([usernamePassword(credentialsId: 'docker-hub-dmanevd', passwordVariable: 'PASSWORD', usernameVariable: 'USER')]) {
-            sh "docker login -u $USER -p $PASSWORD"
-            sh "docker tag $CONTAINER_NAME:$CURRENT_TAG $USER/$CONTAINER_NAME:$CURRENT_TAG"
-            sh "docker push $DOCKER_HUB_USER/$CONTAINER_NAME:$CURRENT_TAG"
-        }
-	echo "Image push complete!"
-    }
+	try {
+		withCredentials([usernamePassword(credentialsId: 'docker-hub-dmanevd', passwordVariable: 'PASSWORD', usernameVariable: 'USER')]) {
+            	sh "docker login -u $USER -p $PASSWORD"
+            	sh "docker tag $CONTAINER_NAME:$CURRENT_TAG $USER/$CONTAINER_NAME:$CURRENT_TAG"
+            	sh "docker push $DOCKER_HUB_USER/$CONTAINER_NAME:$CURRENT_TAG"
+        	}
+		echo "Image push complete!"
+    	} catch (error) {
+	}
+	}
+
 }
