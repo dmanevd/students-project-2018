@@ -1,4 +1,5 @@
 def CONTAINER_NAME = "greetings_app"
+def CON_NAME_TEST = "test_greet"
 def DOCKER_HUB_USER = "dmanevd"
 
 node {
@@ -19,7 +20,7 @@ node {
     }
 
     stage('Unit tests') {
-        status = sh(returnStdout:true, script: "docker run --rm --entrypoint bash --name $CONTAINER_NAME $CONTAINER_NAME:$CURRENT_TAG -c 'python greetings_app/test_selects.py 2>/dev/null && echo \$?'").trim()
+        status = sh(returnStdout:true, script: "docker run --rm --entrypoint bash --name $test_greet $CONTAINER_NAME:$CURRENT_TAG -c 'python greetings_app/test_selects.py 2>/dev/null && echo \$?'").trim()
         sleep 5
         if (status != 0){
             currentBuild.result = 'FAILED'
