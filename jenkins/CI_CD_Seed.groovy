@@ -23,7 +23,7 @@ pipelineJob("CD-job") {
       gitParameterDefinition {
       name('git_tags')
       type('PT_TAG')
-      defaultValue('latest')
+      defaultValue('')
       description('Select the version')
       sortMode('DESCENDING_SMART')
       selectedValue('TOP')
