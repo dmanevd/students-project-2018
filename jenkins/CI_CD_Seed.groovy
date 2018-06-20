@@ -27,6 +27,12 @@ pipelineJob("CD-job") {
       description('Select the version')
       sortMode('DESCENDING_SMART')
       selectedValue('TOP')
+      branch('refs/tags/*')
+      branchFilter('')
+      tagFilter('')
+      useRepository('https://github.com/dmanevd/students-project-2018.git')
+      quickFilterEnabled(false)
+
     }
   }
     definition {
