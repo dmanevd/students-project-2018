@@ -24,7 +24,7 @@ node {
     stage('Running and Integration tests') {
         withCredentials([usernamePassword(credentialsId: 'postgresql-dmanev', passwordVariable: 'PASSWORD', usernameVariable: 'USER')]) {
             sh "docker pull $DOCKER_HUB_USER/$CONTAINER_NAME:${env.git_tags}"
-            sh "docker run -d -p $APP_PORT=$APP_PORT -e 'DB_URL=postgresql://$USER:$PASSWORD@postgresql:$DB_PORT/$DB_NAME' --name $CONTAINER_NAME $DOCKER_HUB_USER/$CONTAINER_NAME:${env.git_tags}"
+            sh "docker run -d -p $APP_PORT:$APP_PORT -e 'DB_URL=postgresql://$USER:$PASSWORD@postgresql:$DB_PORT/$DB_NAME' --name $CONTAINER_NAME $DOCKER_HUB_USER/$CONTAINER_NAME:${env.git_tags}"
         }
         status = sh(returnStdout: true, script: "docker inspect --format='{{.State.Status}}' $CONTAINER_NAME").trim()
         if (status != 'running'){
