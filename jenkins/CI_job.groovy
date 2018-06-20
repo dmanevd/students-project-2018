@@ -14,7 +14,7 @@ node {
     }
 
     stage('Build') {
-        CURRENT_TAG = sh(returnStdout: true, script: "git tag --contains").trim()
+        CURRENT_TAG = sh(returnStdout: true, script: "git describe --tags").trim()
         sh "docker build -t $CONTAINER_NAME:$CURRENT_TAG -t $CONTAINER_NAME --pull --no-cache ."
         echo "Image build complete"
     }
@@ -36,6 +36,7 @@ node {
             	sh "docker push $DOCKER_HUB_USER/$CONTAINER_NAME:$CURRENT_TAG"
         	}
 		echo "Image push complete!"
+		currentBuild.result = 'SUCCESS'
     	} catch (error) {
 	}
 	}
