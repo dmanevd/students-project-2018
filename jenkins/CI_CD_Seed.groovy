@@ -7,7 +7,7 @@ pipelineJob("CI-job") {
                         url('https://github.com/dmanevd/students-project-2018.git')
                         credentials('git-dmanev')
                     }
-                    branch('origin/tags/*.*')
+                    branch('refs/tags/*.*')
                 }
             }
             scriptPath("jenkins/CI_job.groovy")
@@ -27,7 +27,7 @@ pipelineJob("CD-job") {
                         url('https://github.com/dmanevd/students-project-2018.git')
                         credentials('git-dmanev')
                     }
-                    branch('origin/tags/*.*')
+                    branch('refs/tags/$git_tags')
                 }
             }
             scriptPath("jenkins/CD_job.groovy")
