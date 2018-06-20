@@ -14,7 +14,7 @@ pipelineJob("CI-job") {
         }
     }
     triggers {
-        scm('H/5 * * * *')
+        scm('* M/55 * * *')
     }
 }
 
@@ -27,7 +27,7 @@ pipelineJob("CD-job") {
                         url('https://github.com/dmanevd/students-project-2018.git')
                         credentials('git-dmanev')
                     }
-                    branch('refs/tags/$git_tags')
+                    branch('refs/tags/*.*')
                 }
             }
             scriptPath("jenkins/CD_job.groovy")

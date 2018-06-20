@@ -17,7 +17,7 @@ node {
             sh "docker image prune -f"
             sh "docker stop $CONTAINER_NAME"
             sh "docker rm $CONTAINER_NAME"
-          } catch (error) { 
+          } catch (Exception err) { 
         }
     }
 
@@ -27,21 +27,21 @@ node {
             sh "docker run -d -p $APP_PORT=$APP_PORT -e 'DB_URL=postgresql://$USER:$PASSWORD@postgresql:$DB_PORT/$DB_NAME' --name $CONTAINER_NAME $HUB_USER/$IMAGE_NAME:${env.git_tags}"
         }
         status = sh(returnStdout: true, script: "docker inspect --format='{{.State.Status}}' $CONTAINER_NAME").trim()
-        if status != 'running'{
+        if (status != 'running'){
             currentBuild.result = 'FAILED'
             sh "exit 1"
         }
         sleep 5
         APP_IP_ADDR = sh(returnStdout: true, script: "docker inspect $CONTAINER_NAME --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'").trim()
         curl_status_app = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$APP_IP_ADDR:$APP_PORT 1>/dev/null && echo \$?")
-        if (curl_status_app != 0) {
+        if (curl_status_app != '0') {
             currentBuild.result = 'FAILED'
             sh "exit ${curl_status}"
         }
         sleep 5
         html_out = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$APP_IP_ADDR:$APP_PORT").trim()
         grep_status = sh(returnStatus: true, script: "echo $html_out | grep 'Greetings, stranger!' 1>/dev/null && echo \$?").trim()
-        if (grep_status != 0) {
+        if (grep_status != '0') {
             currentBuild.result = 'FAILED'
             sh "exit ${curl_status}"
         }
@@ -49,14 +49,14 @@ node {
         PROXY_IP_ADDR = sh(returnStdout: true, script: "docker inspect $PROXY_CONTAINER_NAME --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'").trim()
         curl_status_pr = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$PROXY_IP_ADDR:$APP_HTTP_PORT 1>/dev/null && echo \$?")
         sh(returnStatus: true, script: "echo http://$APP_IP_ADDR:$APP_PORT")
-        if (curl_status_pr != 0) {
+        if (curl_status_pr != '0') {
             currentBuild.result = 'FAILED'
             sh "exit ${curl_status}"
         }
         sleep 5
         html_out_pr = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$PROXY_IP_ADDR:$APP_HTTP_PORT").trim()
         grep_status_pr = sh(returnStatus: true, script: "echo $html_out_pr | grep 'Greetings, stranger!' 1>/dev/null && echo \$?").trim()
-        if (grep_status_pr != 0) {
+        if (grep_status_pr != '0') {
             currentBuild.result = 'FAILED'
             sh "exit ${curl_status}"
         }
