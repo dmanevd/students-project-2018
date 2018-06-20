@@ -43,7 +43,7 @@ pipelineJob("CD-job") {
                         url('https://github.com/dmanevd/students-project-2018.git')
                         credentials('git-dmanev')
                     }
-                    branch('*/master)
+                    branch('*/master')
                 }
             }
             scriptPath("jenkins/CD_job.groovy")
