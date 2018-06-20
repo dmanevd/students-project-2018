@@ -36,14 +36,14 @@ node {
         curl_status_app = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$APP_IP_ADDR:$APP_PORT 1>/dev/null && echo \$?")
         if (curl_status_app != '0') {
             currentBuild.result = 'FAILED'
-            sh "exit ${curl_status}"
+            sh "exit ${curl_status_app}"
         }
         sleep 5
         html_out = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$APP_IP_ADDR:$APP_PORT").trim()
-        grep_status = sh(returnStatus: true, script: "echo $html_out | grep 'Greetings, stranger!' 1>/dev/null && echo \$?").trim()
-        if (grep_status != '0') {
+        grep_status_app = sh(returnStatus: true, script: "echo $html_out | grep 'Greetings, stranger!' 1>/dev/null && echo \$?").trim()
+        if (grep_status_app != '0') {
             currentBuild.result = 'FAILED'
-            sh "exit ${curl_status}"
+            sh "exit ${grep_status_app}"
         }
         sleep 5
         PROXY_IP_ADDR = sh(returnStdout: true, script: "docker inspect $PROXY_CONTAINER_NAME --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'").trim()
@@ -51,14 +51,14 @@ node {
         sh(returnStatus: true, script: "echo http://$APP_IP_ADDR:$APP_PORT")
         if (curl_status_pr != '0') {
             currentBuild.result = 'FAILED'
-            sh "exit ${curl_status}"
+            sh "exit ${curl_status_pr}"
         }
         sleep 5
         html_out_pr = sh(returnStatus: true, script: "curl --silent --connect-timeout 15 --show-error --fail http://$PROXY_IP_ADDR:$APP_HTTP_PORT").trim()
         grep_status_pr = sh(returnStatus: true, script: "echo $html_out_pr | grep 'Greetings, stranger!' 1>/dev/null && echo \$?").trim()
         if (grep_status_pr != '0') {
             currentBuild.result = 'FAILED'
-            sh "exit ${curl_status}"
+            sh "exit ${grep_status_pr}"
         }
         echo "Application started on http://$PROXY_IP_ADDR:$APP_HTTP_PORT"
     }
