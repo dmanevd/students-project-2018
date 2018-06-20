@@ -41,7 +41,7 @@ pipelineJob("CD-job") {
 	gitParam('git_tags') {
 	    description('image version')
             type('TAG')
-	    selectedValue('TOP')
+	    selectedValue('DEFAULT')
             sortMode('DESCENDING_SMART')
         }
     }
